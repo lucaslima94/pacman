@@ -91,6 +91,7 @@ def depthFirstSearch(problem):
     contador=0
     listaEstados=[]
     listaDirecoes=[]
+    listavisitados=[]
     atualState=problem.getStartState()
     listaEstados.append(atualState)
     listaDirecoes.append(Directions.STOP)
@@ -99,28 +100,41 @@ def depthFirstSearch(problem):
     east=Directions.EAST
     west=Directions.WEST
     stop=Directions.STOP
-    
+    # enquanto nao encontrar estado final, faz sequencia de operacoes
     while(goalStatetest==False):
+		# estado atual recebe proximo estado da lista de estados
 		atualState=listaEstados[contador]
 		print atualState
-		sucessorList= problem.getSuccessors(atualState)
-		for i in  range(0,len(sucessorList)):
-			listaEstados.append(sucessorList[i][0])
-			if(sucessorList[i][1]=='South'):	
-				listaDirecoes.append(south)
-			elif (sucessorList[i][1]=='North'):
-				listaDirecoes.append(north)
-			elif (sucessorList[i][1]=='East'):
-				listaDirecoes.append(east)
-			elif (sucessorList[i][1]=='West'):
-				listaDirecoes.append(west)
-		contador=contador+1
-		goalStatetest=problem.isGoalState(atualState)
-		print goalStatetest
+		# testa se estado atual esta na lista de estados visitados
+		# se sim nao faz nada
+		if atualState in listavisitados:
+			contador=contador+1
+		# senao realiza operacoes
+		else:
+			# gera uma lista de sucessores
+			sucessorList= problem.getSuccessors(atualState)
+			# cria uma lista dedirecoes com a direcao de cada sucessor
+			for i in  range(0,len(sucessorList)):
+				listaEstados.append(sucessorList[i][0])
+				if(sucessorList[i][1]=='South'):	
+					listaDirecoes.append(south)
+				elif (sucessorList[i][1]=='North'):
+					listaDirecoes.append(north)
+				elif (sucessorList[i][1]=='East'):
+					listaDirecoes.append(east)
+				elif (sucessorList[i][1]=='West'):
+					listaDirecoes.append(west)
+			contador=contador+1
+			#booleno recebe teste para saber se chegou no estado final
+			goalStatetest=problem.isGoalState(atualState)
+			print goalStatetest
+		#adiciona estado atual na lista de estados visitados
+		listavisitados.append(atualState)
     print "tamanho lista estados",len(listaEstados)	
+    print listaEstados
     print "tamanho lista de direcoes",len(listaDirecoes)
-    
-    return listaDirecoes
+    print listaDirecoes
+    return [Directions.STOP]
 
     util.raiseNotDefined()
 
