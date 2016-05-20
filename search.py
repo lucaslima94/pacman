@@ -92,9 +92,12 @@ def depthFirstSearch(problem):
     listaEstados=[]
     listaDirecoes=[]
     listavisitados=[]
+    listapai=[]
+    listaindex=[]
     atualState=problem.getStartState()
     listaEstados.append(atualState)
     listaDirecoes.append(Directions.STOP)
+    listapai.append(None)
     south=Directions.SOUTH
     north=Directions.NORTH
     east=Directions.EAST
@@ -118,23 +121,42 @@ def depthFirstSearch(problem):
 				listaEstados.append(sucessorList[i][0])
 				if(sucessorList[i][1]=='South'):	
 					listaDirecoes.append(south)
+					listapai.append(contador)
 				elif (sucessorList[i][1]=='North'):
 					listaDirecoes.append(north)
+					listapai.append(contador)
 				elif (sucessorList[i][1]=='East'):
 					listaDirecoes.append(east)
+					listapai.append(contador)
 				elif (sucessorList[i][1]=='West'):
 					listaDirecoes.append(west)
+					listapai.append(contador)
 			contador=contador+1
 			#booleno recebe teste para saber se chegou no estado final
 			goalStatetest=problem.isGoalState(atualState)
 			print goalStatetest
+			
 		#adiciona estado atual na lista de estados visitados
 		listavisitados.append(atualState)
-    print "tamanho lista estados",len(listaEstados)	
-    print listaEstados
+    contador=contador-1
+    print contador
+    print listaEstados[contador]
+    print listaDirecoes[contador]
+    paiatual=listapai[contador]
+    listaindex.append(paiatual)
+    while listapai[paiatual]!=0:
+		paiatual=listapai[paiatual]
+		listaindex.append(listapai[paiatual])
+    listaindex2=listaindex[::-1]
+    caminho=[]
+    for j in range (0,len(listaindex2)):
+		caminho.append(listaDirecoes[listaindex2[j]])
+    caminho.append(listaDirecoes[contador])
+    caminho.append(listaDirecoes[contador+1])
+    print "tamanho lista estados",len(listaEstados)	 
     print "tamanho lista de direcoes",len(listaDirecoes)
-    print listaDirecoes
-    return [Directions.STOP]
+    return caminho
+    
 
     util.raiseNotDefined()
 
