@@ -18,7 +18,15 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import copy
 
+class estado(object):
+	position,direction,father=None,None,None
+	
+	def setposition(self,x):
+		self.position=x
+	
+	
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -74,91 +82,76 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem):
     from game import Directions
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    """
-    goalStatetest=False
-    contador=0
-    listaEstados=[]
-    listaDirecoes=[]
-    listavisitados=[]
-    listapai=[]
-    listaindex=[]
-    atualState=problem.getStartState()
-    listaEstados.append(atualState)
-    listaDirecoes.append(Directions.STOP)
-    listapai.append(None)
-    south=Directions.SOUTH
+    #cria variaveis para as direcoes
+    south=Directions.SOUTH	
     north=Directions.NORTH
     east=Directions.EAST
     west=Directions.WEST
     stop=Directions.STOP
-    # enquanto nao encontrar estado final, faz sequencia de operacoes
-    while(goalStatetest==False):
-		# estado atual recebe proximo estado da lista de estados
-		atualState=listaEstados[contador]
-		print atualState
-		# testa se estado atual esta na lista de estados visitados
-		# se sim nao faz nada
-		if atualState in listavisitados:
-			contador=contador+1
-		# senao realiza operacoes
-		else:
-			# gera uma lista de sucessores
-			sucessorList= problem.getSuccessors(atualState)
-			# cria uma lista dedirecoes com a direcao de cada sucessor
-			for i in  range(0,len(sucessorList)):
-				listaEstados.append(sucessorList[i][0])
-				if(sucessorList[i][1]=='South'):	
-					listaDirecoes.append(south)
-					listapai.append(contador)
-				elif (sucessorList[i][1]=='North'):
-					listaDirecoes.append(north)
-					listapai.append(contador)
-				elif (sucessorList[i][1]=='East'):
-					listaDirecoes.append(east)
-					listapai.append(contador)
-				elif (sucessorList[i][1]=='West'):
-					listaDirecoes.append(west)
-					listapai.append(contador)
-			contador=contador+1
-			#booleno recebe teste para saber se chegou no estado final
-			goalStatetest=problem.isGoalState(atualState)
-			print goalStatetest
-			
-		#adiciona estado atual na lista de estados visitados
-		listavisitados.append(atualState)
-    contador=contador-1
-    print contador
-    print listaEstados[contador]
-    print listaDirecoes[contador]
-    paiatual=listapai[contador]
-    listaindex.append(paiatual)
-    while listapai[paiatual]!=0:
-		paiatual=listapai[paiatual]
-		listaindex.append(listapai[paiatual])
-    listaindex2=listaindex[::-1]
+    #lista de objetos onde sao armazenados os estados
+    listaestados=[]
+    #lista de estados visitados
+    listavisitados=[]
+    #lista para o caminho do estado incial ate o final
     caminho=[]
-    for j in range (0,len(listaindex2)):
-		caminho.append(listaDirecoes[listaindex2[j]])
-    caminho.append(listaDirecoes[contador])
-    caminho.append(listaDirecoes[contador+1])
-    print "tamanho lista estados",len(listaEstados)	 
-    print "tamanho lista de direcoes",len(listaDirecoes)
-    return caminho
+    contador=0
+    #booleano q indica se e o estao final
+    finalstatetest=False
     
-
+    #cria um objeto inicial, q recebe o estado inicial do problema, joga esse estado na listaestados
+    atualstate=estado()
+    originalstate=estado()
+    atualstate.position=problem.getStartState()
+    atualstate.direction=stop
+    atualstate.father=None
+    listaestados.append(copy.copy(atualstate))
+    #enquanto nao encontra estado final
+    while(finalstatetest==False):
+		#estado atual recebe n-esimo estado do vetor
+		atualstate=copy.copy(listaestados[contador])
+		#testa se estado ja foi visitado
+		if atualstate.position in listavisitados:
+			contador = contador +1
+		else:
+			#se nao gera filhos deste estado
+			originalstate=copy.copy(atualstate)
+			sucessorlist=problem.getSuccessors(atualstate.position)
+			for i in range(0,len(sucessorlist)):
+				#inicializa filhos e coloca na listaestados
+				atualstate.position=sucessorlist[i][0]
+				atualstate.father=contador
+				if(sucessorlist[i][1]=='South'):
+					atualstate.direction=south
+					listaestados.append(copy.copy(atualstate))
+					
+				elif(sucessorlist[i][1]=='North'):
+					atualstate.direction=north
+					listaestados.append(copy.copy(atualstate))
+					
+				elif(sucessorlist[i][1]=='West'):
+					atualstate.direction=west
+					listaestados.append(copy.copy(atualstate))
+					
+				elif(sucessorlist[i][1]=='East'):
+					atualstate.direction=east
+					listaestados.append(copy.copy(atualstate))
+					
+				elif(sucessorlist[i][1]=='Stop'):
+					atualstate.direction=stop
+					listaestados.append(copy.copy(atualstate))
+			#incrementa contador
+			contador=contador+1	
+		#testa se o estado atual e um estado final	
+		finalstatetest=problem.isGoalState(originalstate.position)
+		listavisitados.append(copy.copy(originalstate.position))
+    	
+    for i in range(0,len(listaestados)):
+        print listaestados[i].position
+    		
+    print listaestados[contador-1].position
+    return[stop]
     util.raiseNotDefined()
+	
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
