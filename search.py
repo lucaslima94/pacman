@@ -145,11 +145,17 @@ def depthFirstSearch(problem):
 		finalstatetest=problem.isGoalState(originalstate.position)
 		listavisitados.append(copy.copy(originalstate.position))
     	
-    for i in range(0,len(listaestados)):
-        print listaestados[i].position
+    atualstate=copy.copy(listaestados[contador-1])
+    caminho.append(copy.copy(atualstate.direction))
+    while(atualstate.father!=None):
+		atualstate=copy.copy(listaestados[atualstate.father])
+		caminho.append(copy.copy(atualstate.direction))
+		caminho2=caminho[::-1]
+    
+        
     		
-    print listaestados[contador-1].position
-    return[stop]
+    
+    return caminho2
     util.raiseNotDefined()
 	
 
