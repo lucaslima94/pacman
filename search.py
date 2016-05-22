@@ -194,6 +194,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     stop=Directions.STOP
     
     listaestados=[]
+    caminho=[]
     listavisitados=[]
     smalleststate=estado()
     smallestindex=-1
@@ -250,8 +251,15 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 			goalstatetest=problem.isGoalState(smalleststate.position)
 			listavisitados.append(smalleststate.position)
     
+    atualstate=copy.copy(listaestados[smallestindex])
+    caminho.append(copy.copy(atualstate.direction))
+    while(atualstate.father!=None):
+		atualstate=copy.copy(listaestados[atualstate.father])
+		caminho.append(copy.copy(atualstate.direction))
+    caminho2=caminho[::-1]
+    print caminho2
     
-    return[stop]
+    return caminho2
     util.raiseNotDefined()
 
 
