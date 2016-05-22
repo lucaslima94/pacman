@@ -20,8 +20,14 @@ Pacman agents (in searchAgents.py).
 import util
 import copy
 
+def manhattanHeuristic(atualstate,finalstate):
+    "The Manhattan distance heuristic for a PositionSearchProblem"
+    xy1 = atualstate
+    xy2 = finalstate
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
 class estado(object):
-	position,direction,father=None,None,None
+	position,direction,father,gx,fx,hx,visitorstatus=None,None,None,None,None,None,None
 	
 	def setposition(self,x):
 		self.position=x
@@ -78,7 +84,7 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    #return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
     from game import Directions
@@ -120,6 +126,7 @@ def depthFirstSearch(problem):
 				#inicializa filhos e coloca na listaestados
 				atualstate.position=sucessorlist[i][0]
 				atualstate.father=contador
+				heuristica=manhattanHeuristic(atualstate.position,problem.goal)
 				if(sucessorlist[i][1]=='South'):
 					atualstate.direction=south
 					listaestados.append(copy.copy(atualstate))
@@ -154,7 +161,8 @@ def depthFirstSearch(problem):
     
         
     		
-    
+    finalstate=problem.goal
+    print problem.goal
     return caminho2
     util.raiseNotDefined()
 	
@@ -177,8 +185,73 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
+    from game import Directions
+    #cria variaveis para as direcoes
+    south=Directions.SOUTH	
+    north=Directions.NORTH
+    east=Directions.EAST
+    west=Directions.WEST
+    stop=Directions.STOP
+    
+    listaestados=[]
+    listavisitados=[]
+    smalleststate=estado()
+    smallestindex=-1
+    atualstate=estado()
+    goalstatetest=False
+    
+    initialstate=estado()
+    initialstate.position=problem.getStartState()
+    initialstate.direction=stop
+    initialstate.father=None
+    initialstate.gx=1
+    initialstate.hx=manhattanHeuristic(initialstate.position,problem.goal)
+    initialstate.fx=initialstate.gx+initialstate.hx
+    initialstate.visitorstatus=-1
+    
+    listaestados.append(copy.copy(initialstate))
+    while (goalstatetest==False):
+		for i in range(0,len(listaestados)):
+			if (listaestados[i].visitorstatus==-1):
+				smalleststate=copy.copy(listaestados[i])
+				smallestindex=i
+				break
+		
+		for i in range(0,len(listaestados)):
+			if((listaestados[i].fx < smalleststate.fx) and listaestados[i].visitorstatus==-1):
+				smalleststate=copy.copy(listaestados[i])
+				smallestindex=i
+		listaestados[smallestindex].visitorstatus=1
+				
+		if(smalleststate.position not in listavisitados):
+			sucessorlist=problem.getSuccessors(smalleststate.position)
+			for i in range(0,len(sucessorlist)):
+				atualstate.position=sucessorlist[i][0]
+				atualstate.father=smallestindex
+				atualstate.gx=smalleststate.gx+1
+				atualstate.hx=manhattanHeuristic(sucessorlist[i][0],problem.goal)
+				atualstate.fx=atualstate.gx+atualstate.hx
+				atualstate.visitorstatus=-1
+				if(sucessorlist[i][1]=='South'):
+					atualstate.direction=south
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='North'):
+					atualstate.direction=north
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='West'):
+					atualstate.direction=west
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='East'):
+					atualstate.direction=east
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='Stop'):
+					atualstate.direction=stop
+					listaestados.append(copy.copy(atualstate))
+			goalstatetest=problem.isGoalState(smalleststate.position)
+			listavisitados.append(smalleststate.position)
+    
+    
+    return[stop]
     util.raiseNotDefined()
 
 
