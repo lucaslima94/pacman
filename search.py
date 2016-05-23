@@ -27,7 +27,7 @@ def manhattanHeuristic(atualstate,finalstate):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 class estado(object):
-	position,direction,father,gx,fx,hx,visitorstatus=None,None,None,None,None,None,None
+	position,direction,father,gx,fx,hx,visitorstatus,profundidade=None,None,None,None,None,None,None,None
 	
 	def setposition(self,x):
 		self.position=x
@@ -176,6 +176,7 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+    
 
 def nullHeuristic(state, problem=None):
     """
@@ -183,6 +184,83 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
+
+
+def hillClimbing(problem, heuristic=nullHeuristic):
+	from game import Directions
+	import copy
+	#cria variaveis para as direcoes
+	south=Directions.SOUTH	
+	north=Directions.NORTH
+	east=Directions.EAST
+	west=Directions.WEST
+	stop=Directions.STOP
+	
+	statelist=[]
+	listavizinhos=[]
+	
+	goalstatetest=False
+	initialstate=estado()
+	atualstate=estado()
+	originalstate=estado()
+	initialstate.position=problem.getStartState()
+	initialstate.direction=stop
+	initialstate.father=None
+	initialstate.fx=manhattanHeuristic(initialstate.position,problem.goal)
+	initialstate.visitorstatus=-1
+	initialstate.profundidade=0
+	statelist.append(copy.copy(initialstate))
+	
+	atualstate=copy.copy(statelist[0])
+	originalstate=copy.copy(atualstate)
+	
+	for i in range(0,1000):
+	
+		listavizinhos=[]
+		sucessorlist=problem.getSuccessors(atualstate.position)
+		for i in range(0,len(sucessorlist)):
+			atualstate.position=sucessorlist[i][0]
+			#atualstate.father=smallestindex
+			atualstate.fx=manhattanHeuristic(sucessorlist[i][0],problem.goal)
+			atualstate.visitorstatus=-1
+			atualstate.profundidade=originalstate.profundidade+1
+			if(sucessorlist[i][1]=='South'):
+				atualstate.direction=south
+				statelist.append(copy.copy(atualstate))
+				listavizinhos.append(copy.copy(atualstate))
+			elif(sucessorlist[i][1]=='North'):
+				atualstate.direction=north
+				statelist.append(copy.copy(atualstate))
+				listavizinhos.append(copy.copy(atualstate))
+			elif(sucessorlist[i][1]=='West'):
+				atualstate.direction=west
+				statelist.append(copy.copy(atualstate))
+				listavizinhos.append(copy.copy(atualstate))
+			elif(sucessorlist[i][1]=='East'):
+				atualstate.direction=east
+				statelist.append(copy.copy(atualstate))
+				listavizinhos.append(copy.copy(atualstate))
+			elif(sucessorlist[i][1]=='Stop'):
+				atualstate.direction=stop
+				statelist.append(copy.copy(atualstate))
+				listavizinhos.append(copy.copy(atualstate))
+		for i in range(0, len(statelist)):
+			if ((originalstate.profundidade==statelist[i].profundidade) and (originalstate.position != statelist[i].position )):
+				listavizinhos.append(copy.copy(statelist[i]))
+		
+		for i in range(0,len(listavizinhos)):
+			if (listavizinhos[i].fx<=originalstate.fx):
+				originalstate=copy.copy(listavizinhos[i])
+    
+    
+	for i in range(0,len(listavizinhos)):
+		print listavizinhos[i].position
+	
+	print "original",originalstate.position
+	return [stop]
+	util.raiseNotDefined()
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     from game import Directions
@@ -268,3 +346,4 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+hlc = hillClimbing
