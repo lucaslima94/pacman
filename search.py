@@ -215,47 +215,92 @@ def hillClimbing(problem, heuristic=nullHeuristic):
 	atualstate=copy.copy(statelist[0])
 	originalstate=copy.copy(atualstate)
 	
-	for i in range(0,1000):
-	
+	while(1):
+		goalstatetest = problem.isGoalState(originalstate.position)
+		if(goalstatetest == True):
+			for k in range(0,len(statelist)):
+				if(originalstate.position == statelist[k].position):
+					ultimo = k+1
+			break	
 		listavizinhos=[]
-		sucessorlist=problem.getSuccessors(atualstate.position)
+		
+		testestate=copy.copy(originalstate)
+		#print "cria:", atualstate.position
+		sucessorlist=problem.getSuccessors(originalstate.position)
 		for i in range(0,len(sucessorlist)):
+			#print "ESTADO ATUAL:", originalstate.position
 			atualstate.position=sucessorlist[i][0]
-			#atualstate.father=smallestindex
+			for j in range(0,len(statelist)):
+				if(originalstate.position == statelist[j].position):
+					atualstate.father=j
+					print "Pai: ", atualstate.father
 			atualstate.fx=manhattanHeuristic(sucessorlist[i][0],problem.goal)
 			atualstate.visitorstatus=-1
 			atualstate.profundidade=originalstate.profundidade+1
+			#print "Estado prox:", atualstate.position
 			if(sucessorlist[i][1]=='South'):
 				atualstate.direction=south
 				statelist.append(copy.copy(atualstate))
 				listavizinhos.append(copy.copy(atualstate))
+				#print "Sul:", atualstate.position
 			elif(sucessorlist[i][1]=='North'):
-				atualstate.direction=north
+				atualstate.direction=north	
 				statelist.append(copy.copy(atualstate))
 				listavizinhos.append(copy.copy(atualstate))
+				#print "NOrte:", atualstate.position
 			elif(sucessorlist[i][1]=='West'):
 				atualstate.direction=west
 				statelist.append(copy.copy(atualstate))
 				listavizinhos.append(copy.copy(atualstate))
+				#print "West:", atualstate.position
 			elif(sucessorlist[i][1]=='East'):
 				atualstate.direction=east
 				statelist.append(copy.copy(atualstate))
 				listavizinhos.append(copy.copy(atualstate))
+				#print "East:", atualstate.position
 			elif(sucessorlist[i][1]=='Stop'):
 				atualstate.direction=stop
 				statelist.append(copy.copy(atualstate))
 				listavizinhos.append(copy.copy(atualstate))
+				
+				
+		#Adiciona irmaos para vizinhos
 		for i in range(0, len(statelist)):
 			if ((originalstate.profundidade==statelist[i].profundidade) and (originalstate.position != statelist[i].position )):
 				listavizinhos.append(copy.copy(statelist[i]))
 		
+		print "Pos: ", originalstate.position
+		for i in range(0,len(listavizinhos)):
+			print "Vizinho: ",i ,listavizinhos[i].position
+	
+		#Se menor custo, entao estado atual = estado de menor custo
 		for i in range(0,len(listavizinhos)):
 			if (listavizinhos[i].fx<=originalstate.fx):
 				originalstate=copy.copy(listavizinhos[i])
+				
+		if(testestate.position == originalstate.position):
+			for k in range(0,len(statelist)):
+				if(originalstate.position == statelist[k].position):
+					ultimo = k+1
+			print "ACABOUUUUUUUU"
+			break
+			
+	caminho = []
+	atualstate=copy.copy(statelist[ultimo])
+	caminho.append(copy.copy(initialstate.direction))
+	while(atualstate.father!=None):
+		atualstate=copy.copy(statelist[atualstate.father])
+		caminho.append(copy.copy(atualstate.direction))
+	
+	caminho2=caminho[::-1]
+	print caminho2
+	return caminho2
+						
+				
     
     
-	for i in range(0,len(listavizinhos)):
-		print listavizinhos[i].position
+	#for i in range(0,len(listavizinhos)):
+	#	print listavizinhos[i].position
 	
 	print "original",originalstate.position
 	return [stop]
