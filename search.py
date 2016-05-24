@@ -165,19 +165,7 @@ def depthFirstSearch(problem):
     print problem.goal
     return caminho2
     util.raiseNotDefined()
-	
-
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
-def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
     
-
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -185,6 +173,84 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+def breadthFirstSearch(problem):
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
+
+def uniformCostSearch(problem, heuristic=nullHeuristic):
+    from game import Directions
+    #cria variaveis para as direcoes
+    south=Directions.SOUTH	
+    north=Directions.NORTH
+    east=Directions.EAST
+    west=Directions.WEST
+    stop=Directions.STOP
+    
+    listaestados=[]
+    caminho=[]
+    listavisitados=[]
+    smalleststate=estado()
+    smallestindex=-1
+    atualstate=estado()
+    goalstatetest=False
+    
+    initialstate=estado()
+    initialstate.position=problem.getStartState()
+    initialstate.direction=stop
+    initialstate.father=None
+    initialstate.fx=manhattanHeuristic(initialstate.position,problem.goal)
+    initialstate.visitorstatus=-1
+    
+    listaestados.append(copy.copy(initialstate))
+    while (goalstatetest==False):
+		for i in range(0,len(listaestados)):
+			if (listaestados[i].visitorstatus==-1):
+				smalleststate=copy.copy(listaestados[i])
+				smallestindex=i
+				break
+		
+		for i in range(0,len(listaestados)):
+			if((listaestados[i].fx < smalleststate.fx) and listaestados[i].visitorstatus==-1):
+				smalleststate=copy.copy(listaestados[i])
+				smallestindex=i
+		listaestados[smallestindex].visitorstatus=1
+				
+		if(smalleststate.position not in listavisitados):
+			sucessorlist=problem.getSuccessors(smalleststate.position)
+			for i in range(0,len(sucessorlist)):
+				atualstate.position=sucessorlist[i][0]
+				atualstate.father=smallestindex
+				atualstate.fx=manhattanHeuristic(sucessorlist[i][0],problem.goal)
+				atualstate.visitorstatus=-1
+				if(sucessorlist[i][1]=='South'):
+					atualstate.direction=south
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='North'):
+					atualstate.direction=north
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='West'):
+					atualstate.direction=west
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='East'):
+					atualstate.direction=east
+					listaestados.append(copy.copy(atualstate))
+				elif(sucessorlist[i][1]=='Stop'):
+					atualstate.direction=stop
+					listaestados.append(copy.copy(atualstate))
+			goalstatetest=problem.isGoalState(smalleststate.position)
+			listavisitados.append(smalleststate.position)
+    
+    atualstate=copy.copy(listaestados[smallestindex])
+    caminho.append(copy.copy(atualstate.direction))
+    while(atualstate.father!=None):
+		atualstate=copy.copy(listaestados[atualstate.father])
+		caminho.append(copy.copy(atualstate.direction))
+    caminho2=caminho[::-1]
+    print caminho2
+    
+    return caminho2
+    util.raiseNotDefined()
 
 
 def hillClimbing(problem, heuristic=nullHeuristic):
